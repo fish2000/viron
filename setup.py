@@ -21,7 +21,7 @@
 
 import os, os.path
 name = 'viron'
-version = '0.8.0'
+version = '0.1.5'
 packages = []
 description = 'Put environment variables in text file templates.'
 keywords = 'python environment variable simple template text'
