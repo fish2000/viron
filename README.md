@@ -24,8 +24,8 @@ no doubt come to expect, e.g.:
 
 Viron works hard to be this straightforardly stupid. For example, Viron is implemented
 on top of the python standard-lib [string.Template class](http://docs.python.org/release/2.5.2/lib/node40.html), which idiotically takes
-the liberty ofturning any occurances of doubled-up dollar signs (or '$$') into
-a single dollar sign (to wit, '$') that it encounters while templating... Viron 
+the liberty of turning any occurances of doubled-up dollar signs (or '$$') into
+a single dollar sign (to wit, '$') that it should happen across while templating... Viron 
 specifically lacks this nonsensical 'feature'.
 
 Conversely, the stdlib templater's vexing ignorance of the backslash prefix to mean
