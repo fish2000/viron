@@ -54,11 +54,11 @@ way entirely and send me a patch titled "Viron is now turing-complete and implem
 semantically legible Oauth2 and free foot-rubs" I will probably totally accept it.
 Realistically, you're going to hack on stuff with more cachét, like e.g.
 
-    * demoing a realtime notification framework and protocol that uses at least three NoSQL stores simultaneously
-    * sharing clever Haskell type-inference schemes with other people who also write clever Haskell type-inference schemes
-    * not subclassing NSActionCell, staying in denial by writing convenience methods all day and only touching your app's mongoloid UI in the simulator
-    * punching Rasmus Lerdorf in the kidneys (q.v. backslash note ¶4 [supra])
-    * "writing" incoherent and Byzantine Oauth2 examples that do not clarify the issue or condescend to explain what all the bits are, why in fuck those bits are there, or why they are fucking different from some (but not all) of the bits on this other different Oauth2 example over here
-    * pair-programming behavior-driven domain-specific social-graph microframeworks pivoting on a responsive user-experience, in the cloud
+* demoing a realtime notification framework and protocol that uses at least three NoSQL stores simultaneously
+* sharing clever Haskell type-inference schemes with other people who also write clever Haskell type-inference schemes
+* not subclassing NSActionCell, staying in denial by writing convenience methods all day and only touching your app's mongoloid UI in the simulator
+* punching Rasmus Lerdorf in the kidneys (q.v. backslash note ¶4 [supra])
+* "writing" incoherent and Byzantine Oauth2 examples that do not clarify the issue or condescend to explain what all the bits are, why in fuck those bits are there, or why they are fucking different from some (but not all) of the bits on this other different Oauth2 example over here
+* pair-programming behavior-driven domain-specific social-graph microframeworks pivoting on a responsive user-experience, in the cloud
 
 ... So but if Viron can actually work for you, I am quite literally and unsarcastically thrilled on your behalf -- do let me know, and salud.
