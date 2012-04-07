@@ -21,7 +21,7 @@
 
 import os, os.path
 name = 'viron'
-version = '0.1.5'
+version = '0.1.8'
 packages = []
 description = 'Put environment variables in text file templates.'
 keywords = 'python environment variable simple template text'
@@ -37,6 +37,8 @@ except ImportError:
 import shutil
 if not os.path.exists('src/scripts'):
     os.makedirs('src/scripts')
+if os.path.exists('src/scripts/viron'):
+    os.remove('src/scripts/viron')
 shutil.copyfile('src/viron/viron.py', 'src/scripts/viron')
 os.chmod('src/scripts/viron', 0755)
 
