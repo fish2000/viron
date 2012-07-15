@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# encoding: utf-8
+# -*- coding: utf-8 -*-
 """
 VIRON -- Put environment variables in text file templates.
 
@@ -27,11 +27,12 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 
-Copyright © 2012 Alexander Bohn.
+Copyright 2012 Alexander Bohn.
 This software is licensed under the terms of the GNU General Public
 License version 2 as published by the Free Software Foundation.
 
 """
+
 import sys
 import os
 import re
@@ -122,50 +123,7 @@ def text(args):
 p = ArghParser()
 p.add_commands([text, filepath])
 
-if __name__ == "__main__":
-    yodogg = """
-
-    DEBUG = True
-
-    TM_SELECTED_FILE = $TM_SELECTED_FILE
-    COMMAND_MODE = $COMMAND_MODE
-    TM_PROJECT_FILEPATH = $TM_PROJECT_FILEPATH
-    DJANGO_SETTINGS_MODULE = $DJANGO_SETTINGS_MODULE
-
-    $
-
-    import os
-    virtualpath = lambda *pths: os.path.join('$VIRTUAL_ENV', *pths)
-
-    HOME = \$HOME
-
-    SECURITYSESSIONID = ${SECURITYSESSIONID}
-    PYTHONPATH = ${PYTHONPATH}DOGG
-
-    $ $ $
-    $$ $$$ $$$$
-
-    ${
-
-
-    DATABASES = {
-        "default": {
-            # Ends with "postgresql_psycopg2", "mysql", "sqlite3" or "oracle".
-            "ENGINE": "django.db.backends.sqlite3",
-            # DB name or path to database file if using sqlite3.
-            "NAME": "dev-$INSTANCE_NAME.db",
-            # Not used with sqlite3.
-            "USER": "",
-            # Not used with sqlite3.
-            "PASSWORD": "",
-            # Set to empty string for localhost. Not used with sqlite3.
-            "HOST": "",
-            # Set to empty string for default. Not used with sqlite3.
-            "PORT": "",
-        }
-    }
-
-    """
+def main():
     argv = list(sys.argv[1:])
     cmdarg = argv[0:1]
     if len(cmdarg) > 0:
@@ -175,3 +133,7 @@ if __name__ == "__main__":
     if cmd not in ('text', 'filepath'):
         argv.insert(0, 'text')
     p.dispatch(argv=argv)
+
+if __name__ == "__main__":
+    main()
+

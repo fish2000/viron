@@ -19,9 +19,8 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import os, os.path
 name = 'viron'
-version = '0.1.8'
+version = '0.1.9'
 packages = []
 description = 'Put environment variables in text file templates.'
 keywords = 'python environment variable simple template text'
@@ -34,41 +33,31 @@ try:
 except ImportError:
     from distutils.core import setup
 
-import shutil
-if not os.path.exists('src/scripts'):
-    os.makedirs('src/scripts')
-if os.path.exists('src/scripts/viron'):
-    os.remove('src/scripts/viron')
-shutil.copyfile('src/viron/viron.py', 'src/scripts/viron')
-os.chmod('src/scripts/viron', 0755)
-
 setup(
     name=name, version=version, description=description,
-    download_url = 'http://github.com/fish2000/%s/zipball/master' % name,
-
-    author=u"Alexander Bohn",
-    author_email='fish2000@gmail.com',
-    url='http://github.com/fish2000/%s/' % name,
-    license='GPLv2',
+    keywords=keywords, platforms=['any'], packages=['viron'],
     
-    keywords=keywords,
-    platforms=['any'],
-    packages=['viron'],
-    package_dir={'viron': 'src/viron' },
-    package_data={},
-    scripts={
-        'src/scripts/viron': 'viron' },
+    author=u"Alexander Bohn", author_email='fish2000@gmail.com',
+    
+    license='GPLv2',
+    url='http://github.com/fish2000/%s/' % name,
+    download_url='http://github.com/fish2000/%s/zipball/master' % name,
+    
+    entry_points={
+        'console_scripts':['viron = viron:main'] },
+    
+    package_dir={
+        'viron': 'src/viron' },
     
     install_requires=[
-        'argparse',
-        'argh'],
+        'argparse', 'argh'],
     
     classifiers=classifiers+[
-    'License :: OSI Approved :: GNU General Public License (GPL)',
-    'Operating System :: MacOS',
-    'Operating System :: Microsoft :: Windows',
-    'Operating System :: OS Independent',
-    'Operating System :: POSIX',
-    'Operating System :: Unix',
-    'Programming Language :: Python :: 2.6'],
+        'License :: OSI Approved :: GNU General Public License (GPL)',
+        'Operating System :: MacOS',
+        'Operating System :: Microsoft :: Windows',
+        'Operating System :: OS Independent',
+        'Operating System :: POSIX',
+        'Operating System :: Unix',
+        'Programming Language :: Python :: 2.6'],
 )
