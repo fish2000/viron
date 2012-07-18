@@ -64,8 +64,7 @@ def viron(swaptext, swapdic=os.environ, dumpstride=3, warn_unmapped_labels=True)
     if warn_unmapped_labels and len(strays) > 0:
         valids = sorted(filter(
             lambda s: s.isupper() and not s.startswith('_'),
-                swapdic.keys()),
-            key=len)
+                swapdic.keys()), key=len)
         strident = "%%-%ds" % len(list(reversed(valids))[0])
         stride = xrange(0, len(valids), dumpstride)
         print >>sys.stderr, "Valid template labels are:\n"
@@ -97,7 +96,9 @@ def stdinput(dumpstride=3):
         if not line:
             break
 
-        sys.stdout.write(viron(line, dumpstride=dumpstride, warn_unmapped_labels=False))
+        sys.stdout.write(viron(line,
+            dumpstride=dumpstride,
+            warn_unmapped_labels=False))
     return ''
 
 @arg('TEXT', nargs='?', default=None,
