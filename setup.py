@@ -44,7 +44,7 @@ setup(
     download_url='http://github.com/fish2000/%s/zipball/master' % name,
     
     entry_points={
-        'console_scripts':['viron = viron:main'] },
+        'console_scripts': ['viron = viron.viron:main'] },
     
     package_dir={
         'viron': 'src/viron' },
