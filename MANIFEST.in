@@ -1,5 +1,5 @@
 include .gitignore
 include README.md
 include setup.py
-recursive-include src *.py
+recursive-include src/viron *.py
 

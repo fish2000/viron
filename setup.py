@@ -22,7 +22,7 @@ from __future__ import print_function
 import sys
 
 name = 'viron'
-version = '0.3.2'
+version = '0.3.3'
 packages = []
 description = 'Put environment variables in text file templates.'
 keywords = 'python environment variable simple template text'
