@@ -1,5 +1,4 @@
-exclude *.pyc *~ .DS_Store
 include .gitignore
 include README.md
-recursive-include src *
+recursive-include src *.py
 

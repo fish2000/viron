@@ -18,9 +18,11 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+from __future__ import print_function
+import sys
 
 name = 'viron'
-version = '0.2.0'
+version = '0.2.2'
 packages = []
 description = 'Put environment variables in text file templates.'
 keywords = 'python environment variable simple template text'
@@ -32,6 +34,17 @@ try:
     from setuptools import setup
 except ImportError:
     from distutils.core import setup
+
+if 'sdist' in sys.argv and 'upload' in sys.argv:
+    import commands
+    import os
+    finder = "/usr/bin/find %s \( -name \*.pyc -or -name .DS_Store \) -delete"
+    theplace = os.getcwd()
+    if theplace not in (".", "/"):
+        print("+ Deleting crapola from %s..." % theplace)
+        print("$ %s" % finder % theplace)
+        commands.getstatusoutput(finder % theplace)
+        print("")
 
 setup(
     name=name, version=version, description=description,

@@ -131,7 +131,7 @@ def main():
         cmd = cmdarg[0]
     else:
         cmd = None
-    if cmd not in ('text', 'filepath'):
+    if cmd is not None and cmd not in ('text', 'filepath'):
         argv.insert(0, 'text')
     p.dispatch(argv=argv)
 
