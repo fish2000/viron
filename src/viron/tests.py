@@ -1,5 +1,4 @@
 
-
 yodogg = """
 
 DEBUG = True
@@ -43,3 +42,10 @@ DATABASES = {
 }
 
 """
+
+if __name__ == "__main__":
+    import sys
+    sys.argv = ['viron', yodogg]
+    from viron import main
+    main()
+    

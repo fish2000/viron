@@ -41,7 +41,8 @@ from argh import ArghParser, command, arg
 
 
 @command
-def viron(swaptext, swapdic=os.environ, dumpstride=3, warn_unmapped_labels=True):
+def viron(swaptext, swapdic=os.environ, ignoreseq=tuple(),
+    dumpstride=3, warn_unmapped_labels=True):
 
     """ Simplistically replace any and all environment-variable-esque
     $VAR_LABEL declarations in :`swaptext` with content, as per the
@@ -50,24 +51,26 @@ def viron(swaptext, swapdic=os.environ, dumpstride=3, warn_unmapped_labels=True)
     matcher = r'(?<!\\)\${1}([A-Z][A-Z0-9_]+)'
     bracedmatcher = r'(?<!\\)\${1}\{([A-Z][A-Z0-9_]+)\}'
     swapmapper = lambda en: en and (en, swapdic.get(en, en)) or ''
-
+    swapfilter = lambda ex: ex and not (ex in ignoreseq)
+    
     envs = dict(map(swapmapper,
-        re.compile(matcher).findall(swaptext)))
+        filter(swapfilter,
+            re.compile(matcher).findall(swaptext))))
     envs.update(dict(map(swapmapper,
-        re.compile(bracedmatcher).findall(swaptext))))
+        filter(swapfilter,
+            re.compile(bracedmatcher).findall(swaptext)))))
 
     strays = set(envs.keys()).difference(swapdic.keys())
 
-    for stray in strays:
-        print >>sys.stderr, "Warning: unmapped template label %s" % stray
-
     if warn_unmapped_labels and len(strays) > 0:
+        for stray in strays:
+            print >>sys.stderr, "Warning: unmapped template label %s" % stray
         valids = sorted(filter(
             lambda s: s.isupper() and not s.startswith('_'),
                 swapdic.keys()), key=len)
         strident = "%%-%ds" % len(list(reversed(valids))[0])
         stride = xrange(0, len(valids), dumpstride)
-        print >>sys.stderr, "Valid template labels are:\n"
+        print >>sys.stderr, "Valid template labels:\n"
         for stride in [valids[i:dumpstride+i] for i in stride]:
             print >>sys.stderr, ": ".join([strident % step for step in stride])
 
@@ -76,17 +79,21 @@ def viron(swaptext, swapdic=os.environ, dumpstride=3, warn_unmapped_labels=True)
             flags=re.MULTILINE)).safe_substitute(**envs)
 
 
-def filepath(pth, dumpstride=3):
+def filepath(pth, ignoreseq=tuple(),
+    dumpstride=3, warn_unmapped_labels=True):
     try:
         with open(pth, 'r') as filepth:
-            return viron(filepth.read(), dumpstride=dumpstride)
+            return viron(filepth.read(),
+                ignoreseq=ignoreseq,
+                dumpstride=dumpstride,
+                warn_unmapped_labels=warn_unmapped_labels)
     except IOError, err:
         print >>sys.stderr, "File path %s is totally invalid." % pth
         print >>sys.stderr, unicode(err).encode('UTF-8')
         sys.exit(1)
 
 
-def stdinput(dumpstride=3):
+def stdinput(ignoreseq=tuple(), dumpstride=3):
     while 1:
         try:
             line = sys.stdin.readline()
@@ -97,6 +104,7 @@ def stdinput(dumpstride=3):
             break
 
         sys.stdout.write(viron(line,
+            ignoreseq=ignoreseq,
             dumpstride=dumpstride,
             warn_unmapped_labels=False))
     return ''
@@ -106,19 +114,34 @@ def stdinput(dumpstride=3):
 @arg('-f', '--file', nargs='?', default=None,
     help="File path from which to load text for viron agumentation")
 @arg('-S', '--dump-stride', default=3,
-    help="Number of columns to use when listing valid template labels")
+    help="Number of columns to print when listing valid template labels")
+@arg('-i', '--ignore', default="",
+    help="Comma-separated list of labels to ignore")
+@arg('-q', '--quiet', action='store_true',
+    help="Don't issue warnings on STDERR about unknown template labels")
 def text(args):
+    warn_unmapped_labels = (not args.quiet)
+    ignoreseq = tuple(str(args.ignore).upper().split(','))
+    if args.dump_stride < 1:
+        warn_unmapped_labels = False
     if args.TEXT is None:
         if args.file is None:
-            return stdinput(dumpstride=args.dump_stride)
+            return stdinput(ignoreseq=ignoreseq,
+                dumpstride=args.dump_stride)
         else:
-            return filepath(args.file, dumpstride=args.dump_stride)
+            return filepath(args.file,
+                ignoreseq=ignoreseq,
+                dumpstride=args.dump_stride,
+                warn_unmapped_labels=warn_unmapped_labels)
     else:
         if args.file is not None:
             print >>sys.stderr, "Warning: reading from %s (ignoring text '%s')" % (args.file, args.TEXT)
-            return filepath(args.file, dumpstride=args.dump_stride)
+            return filepath(args.file, ignoreseq=ignoreseq,
+                dumpstride=args.dump_stride)
         else:
-            return viron(args.TEXT, dumpstride=args.dump_stride)
+            return viron(args.TEXT, ignoreseq=ignoreseq,
+                dumpstride=args.dump_stride,
+                warn_unmapped_labels=warn_unmapped_labels)
 
 
 p = ArghParser()
