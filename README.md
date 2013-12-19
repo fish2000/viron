@@ -1,4 +1,3 @@
-
 VIRON
 =====
 
@@ -15,8 +14,8 @@ E.g.:
     $_NO_DICE_IN_MY_CASE
     $IWontFlyEither
 
-Viron handles curly-braces and backslash escapes for dollar signs work as you have
-no doubt come to expect, e.g.:
+Viron handles curly-braces and backslash escapes for dollar signs, in the manner you have
+no doubt come to expect from many civilized syntactic programming traditions, e.g.:
 
     $I_BECOME_MY_CONTENT
     \$WHEREAS_I_REMAIN_UNAFFECTED
