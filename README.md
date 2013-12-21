@@ -41,7 +41,7 @@ of the other eleventy billion scripts, tools, frameworks, plug-ins, or thingees 
 accomplish this exact task except better or moreso or someshit. Viron isn't some
 kind of freakish zombified imperative markup like [HAML](http://haml-lang.com/), nor is it some sort of wittily
 elegant thing that will up and become a gosh-darned de-facto standard, such as for example
-[Mustache](http://mustache.github.com/). It's just dumb ol' environment variables in text files -- truth be told,
+[Mustache](http://mustache.github.com/). It's just dumb ol' environment variables in text files – truth be told,
 I didn't even want to write it, but I keept needing it and none of the other solutions
 were stupid enough.
 
