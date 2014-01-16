@@ -37,7 +37,7 @@ from argh import ArghParser, command, arg
 
 @command
 def viron(swaptext, swapdic=os.environ, ignoreseq=tuple(),
-    dumpstride=3, warn_unmapped_labels=True):
+    dumpstride=3, warn_unmapped_labels=True, quiet=True):
     """ Simplistically replace any and all environment-variable-esque
         $VAR_LABEL declarations in :`swaptext` with content from
         appropriate :`swapdic` mappings, *qua* said declared labels. """
@@ -81,8 +81,8 @@ def viron(swaptext, swapdic=os.environ, ignoreseq=tuple(),
                 flags=re.MULTILINE)).safe_substitute(**envs)
 
 
-def filepath(pth, ignoreseq=tuple(),
-    dumpstride=3, warn_unmapped_labels=True):
+def filepath(pth, ignoreseq=tuple(), dumpstride=3,
+    warn_unmapped_labels=True, quiet=True):
     """ Perform viron() substitution with file contents. """
     
     try:
@@ -90,13 +90,15 @@ def filepath(pth, ignoreseq=tuple(),
             return viron(filepth.read(),
                 ignoreseq=ignoreseq,
                 dumpstride=dumpstride,
-                warn_unmapped_labels=warn_unmapped_labels)
+                warn_unmapped_labels=warn_unmapped_labels,
+                quiet=quiet)
     
     except IOError, err:
-        print("File path %s is totally invalid." % pth,
-            file=sys.stderr)
-        print(unicode(err).encode('UTF-8'),
-            file=sys.stderr)
+        if not quiet:
+            print("File path %s is totally invalid" % pth,
+                file=sys.stderr)
+            print(unicode(err).encode('UTF-8'),
+                file=sys.stderr)
         sys.exit(1)
 
 
@@ -117,70 +119,106 @@ def stdinput(ignoreseq=tuple(), dumpstride=3):
                 warn_unmapped_labels=False))
     return ''
 
-@arg('TEXT', nargs='?', default=None,
-    help="Text to process")
-@arg('-f', '--file', nargs='?', default=None,
-    help="File path from which to load text for viron agumentation")
+
+@arg('FILE', nargs='?', default=None,
+    help="File path from which to load text")
 @arg('-S', '--dump-stride', default=3,
     help="Number of columns to print when listing valid template labels")
 @arg('-i', '--ignore', default="",
     help="Comma-separated list of labels to ignore")
-@arg('-q', '--quiet', action='store_true',
-    help="Don't issue warnings on STDERR about unknown template labels")
-def text(args):
-    warn_unmapped_labels = (not args.quiet)
+@arg('-v', '--verbose', action='store_true',
+    help="Run verbosely")
+@arg('-w', '--warn-unmapped-labels', action='store_true',
+    help="Issue warnings on STDERR when unknown template labels are encountered")
+@arg('-t', '--text', nargs='?', default=None,
+    help="Text to process")
+def file(args):
+    quiet = (not args.verbose)
+    warn_unmapped_labels = quiet and False or args.warn_unmapped_labels
     ignoreseq = tuple(str(args.ignore).upper().split(','))
     
     if args.dump_stride < 1:
         warn_unmapped_labels = False
     
-    if args.TEXT is None:
+    if args.text is None:
     
-        if args.file is None:
+        if args.FILE is None:
             return stdinput(
                 ignoreseq=ignoreseq,
                 dumpstride=args.dump_stride)
     
         else:
-            return filepath(args.file,
+            
+            pth = args.FILE and args.FILE or ''
+            if '~' in pth:
+                pth = os.path.expanduser(pth)
+            if '$' in pth:
+                pth = os.path.expandvars(pth)
+    
+            if not os.path.exists(pth):
+                if quiet:
+                    print("File path %s is totally invalid" % pth,
+                        file=sys.stderr)
+                sys.exit(1)
+            
+            return filepath(pth,
                 ignoreseq=ignoreseq,
                 dumpstride=args.dump_stride,
-                warn_unmapped_labels=warn_unmapped_labels)
+                warn_unmapped_labels=warn_unmapped_labels,
+                quiet=quiet)
     
     else:
+        
+        if args.FILE is not None:
+            
+            pth = args.FILE and args.FILE or ''
+            if '~' in pth:
+                pth = os.path.expanduser(pth)
+            if '$' in pth:
+                pth = os.path.expandvars(pth)
     
-        if args.file is not None:
-            print("Warning: reading from %s (ignoring text '%s')" % (
-                args.file, args.TEXT),
-                file=sys.stderr)
-            return filepath(args.file,
-                ignoreseq=ignoreseq,
-                dumpstride=args.dump_stride)
-    
-        else:
-            return viron(args.TEXT,
+            if not os.path.exists(pth):
+                if quiet:
+                    print("File path %s is totally invalid" % pth,
+                        file=sys.stderr)
+                sys.exit(1)
+            
+            if not quiet:
+                print("Warning: reading from %s (ignoring text '%s')" % (
+                    pth, args.text),
+                    file=sys.stderr)
+            return filepath(pth,
                 ignoreseq=ignoreseq,
                 dumpstride=args.dump_stride,
-                warn_unmapped_labels=warn_unmapped_labels)
+                quiet=quiet)
+    
+        else:
+            return viron(args.text,
+                ignoreseq=ignoreseq,
+                dumpstride=args.dump_stride,
+                warn_unmapped_labels=warn_unmapped_labels,
+                quiet=quiet)
 
 
 p = ArghParser()
-p.add_commands([text, filepath])
+p.add_commands([file, filepath, viron])
 
-def main():
-    argv = list(sys.argv[1:])
-    cmdarg = argv[0:1]
+def main(argv=None):
+    argv = list(argv and argv or sys.argv[1:])
+    #print(argv)
     
+    cmdarg = argv[0:1]
     if len(cmdarg) > 0:
         cmd = cmdarg[0]
     else:
         cmd = None
     
-    if cmd is not None and cmd not in ('text', 'filepath'):
-        argv.insert(0, 'text')
+    if cmd is not None and cmd not in ('file', 'filepath'):
+        argv.insert(0, 'file')
     
     p.dispatch(argv=argv)
 
 if __name__ == "__main__":
     main()
+    sys.exit(0)
 

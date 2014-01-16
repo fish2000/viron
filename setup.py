@@ -27,7 +27,7 @@ from __future__ import print_function
 import sys
 
 name = 'viron'
-version = '0.3.6'
+version = '0.4.8'
 packages = []
 description = 'Put environment variables in text file templates.'
 keywords = 'python environment variable simple template text'
@@ -54,21 +54,23 @@ if 'sdist' in sys.argv and 'upload' in sys.argv:
 setup(
     name=name, version=version, description=description,
     keywords=keywords, platforms=['any'], packages=['viron'],
+    author=u"Alexander Bohn",
+    author_email='fish2000@gmail.com',
+    license='MIT',
     
-    author=u"Alexander Bohn", author_email='fish2000@gmail.com',
-    
-    license='GPLv2',
     url='http://github.com/fish2000/%s/' % name,
     download_url='http://github.com/fish2000/%s/zipball/master' % name,
-    
-    entry_points={
-        'console_scripts': ['viron = viron.viron:main'] },
+    install_requires=['argparse', 'argh'],
     
     package_dir={
-        'viron': 'src/viron' },
+        'viron': 'src/viron',
+    },
     
-    install_requires=[
-        'argparse', 'argh'],
+    entry_points={
+        'console_scripts': [
+            'viron = viron.viron:main'
+        ],
+    },
     
     classifiers=classifiers+[
         'License :: OSI Approved :: MIT License',
@@ -77,5 +79,5 @@ setup(
         'Operating System :: OS Independent',
         'Operating System :: POSIX',
         'Operating System :: Unix',
-        'Programming Language :: Python :: 2.6'],
+        'Programming Language :: Python :: 2.7'],
 )
