@@ -60,3 +60,7 @@ Realistically, you're going to hack on stuff with more cachét, like e.g.
 * pair-programming behavior-driven domain-specific social-graph microframeworks pivoting on a responsive user-experience, in the cloud
 
 ... So but if Viron can actually work for you, I am quite literally and unsarcastically thrilled on your behalf — do let me know, and salud.
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/fish2000/viron/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
