@@ -33,9 +33,8 @@ import sys
 import os
 import re
 from string import Template
-from argh import ArghParser, command, arg
+from argh import ArghParser, arg
 
-@command
 def viron(swaptext, swapdic=os.environ, ignoreseq=tuple(),
     dumpstride=3, warn_unmapped_labels=True, quiet=True):
     """ Simplistically replace any and all environment-variable-esque
@@ -58,22 +57,24 @@ def viron(swaptext, swapdic=os.environ, ignoreseq=tuple(),
 
     if warn_unmapped_labels and len(strays) > 0:
         
+        print("", file=sys.stderr)
         for stray in strays:
             print("Warning: unmapped template label %s" % stray,
                 file=sys.stderr)
         
-        valids = sorted(filter(
-            lambda s: s.isupper() and not s.startswith('_'),
-                swapdic.keys()), key=len)
-        strident = "%%-%ds" % len(list(reversed(valids))[0])
-        stride = xrange(0, len(valids), dumpstride)
+        if dumpstride > 0:
+            valids = sorted(filter(
+                lambda s: s.isupper() and not s.startswith('_'),
+                    swapdic.keys()), key=len)
+            strident = "%%-%ds" % len(list(reversed(valids))[0])
+            stride = xrange(0, len(valids), dumpstride)
         
-        print("Valid template labels:\n",
-            file=sys.stderr)
-        for stride in [valids[i:dumpstride+i] for i in stride]:
-            print(": ".join(
-                [strident % step for step in stride]),
-                    file=sys.stderr)
+            print("Valid template labels:\n",
+                file=sys.stderr)
+            for stride in [valids[i:dumpstride+i] for i in stride]:
+                print(": ".join(
+                    [strident % step for step in stride]),
+                        file=sys.stderr)
 
     return Template(
         re.sub(r'(\$+?)(?![A-Z0-9\{]+?)',
@@ -95,14 +96,15 @@ def filepath(pth, ignoreseq=tuple(), dumpstride=3,
     
     except IOError, err:
         if not quiet:
-            print("File path %s is totally invalid" % pth,
+            print("\nERROR: File path %s is totally invalid" % pth,
                 file=sys.stderr)
             print(unicode(err).encode('UTF-8'),
                 file=sys.stderr)
         sys.exit(1)
 
 
-def stdinput(ignoreseq=tuple(), dumpstride=3):
+def stdinput(ignoreseq=tuple(), dumpstride=3,
+    warn_unmapped_labels=True, quiet=True):
     while 1:
         try:
             line = sys.stdin.readline()
@@ -116,7 +118,8 @@ def stdinput(ignoreseq=tuple(), dumpstride=3):
             viron(line,
                 ignoreseq=ignoreseq,
                 dumpstride=dumpstride,
-                warn_unmapped_labels=False))
+                warn_unmapped_labels=False,
+                quiet=quiet))
     return ''
 
 
@@ -132,70 +135,72 @@ def stdinput(ignoreseq=tuple(), dumpstride=3):
     help="Issue warnings on STDERR when unknown template labels are encountered")
 @arg('-t', '--text', nargs='?', default=None,
     help="Text to process")
-def file(args):
-    quiet = (not args.verbose)
-    warn_unmapped_labels = quiet and False or args.warn_unmapped_labels
-    ignoreseq = tuple(str(args.ignore).upper().split(','))
+def file(FILE, *args, **kwargs):
+    quiet = not kwargs['verbose']
+    warn_unmapped_labels = kwargs['verbose'] or kwargs['warn_unmapped_labels']
+    ignoreseq = tuple(str(kwargs['ignore']).upper().split(','))
     
-    if args.dump_stride < 1:
-        warn_unmapped_labels = False
+    if kwargs['text'] is None:
     
-    if args.text is None:
-    
-        if args.FILE is None:
+        if FILE is None:
+            if not quiet:
+                print("Note: Reading from standard input...\n",
+                    file=sys.stderr)
+                
             return stdinput(
                 ignoreseq=ignoreseq,
-                dumpstride=args.dump_stride)
+                dumpstride=kwargs['dump_stride'],
+                quiet=quiet)
     
         else:
             
-            pth = args.FILE and args.FILE or ''
+            pth = FILE and FILE or ''
             if '~' in pth:
                 pth = os.path.expanduser(pth)
             if '$' in pth:
                 pth = os.path.expandvars(pth)
     
             if not os.path.exists(pth):
-                if quiet:
-                    print("File path %s is totally invalid" % pth,
+                if not quiet:
+                    print("\nERROR: File path %s is totally invalid" % pth,
                         file=sys.stderr)
                 sys.exit(1)
             
             return filepath(pth,
                 ignoreseq=ignoreseq,
-                dumpstride=args.dump_stride,
+                dumpstride=kwargs['dump_stride'],
                 warn_unmapped_labels=warn_unmapped_labels,
                 quiet=quiet)
     
     else:
         
-        if args.FILE is not None:
+        if FILE is not None:
             
-            pth = args.FILE and args.FILE or ''
+            pth = FILE and FILE or ''
             if '~' in pth:
                 pth = os.path.expanduser(pth)
             if '$' in pth:
                 pth = os.path.expandvars(pth)
     
             if not os.path.exists(pth):
-                if quiet:
-                    print("File path %s is totally invalid" % pth,
+                if not quiet:
+                    print("\nERROR: File path %s is totally invalid" % pth,
                         file=sys.stderr)
                 sys.exit(1)
             
             if not quiet:
                 print("Warning: reading from %s (ignoring text '%s')" % (
-                    pth, args.text),
+                    pth, kwargs['text']),
                     file=sys.stderr)
             return filepath(pth,
                 ignoreseq=ignoreseq,
-                dumpstride=args.dump_stride,
+                dumpstride=kwargs['dump_stride'],
                 quiet=quiet)
     
         else:
-            return viron(args.text,
+            return viron(kwargs['text'],
                 ignoreseq=ignoreseq,
-                dumpstride=args.dump_stride,
+                dumpstride=kwargs['dump_stride'],
                 warn_unmapped_labels=warn_unmapped_labels,
                 quiet=quiet)
 
@@ -205,8 +210,6 @@ p.add_commands([file, filepath, viron])
 
 def main(argv=None):
     argv = list(argv and argv or sys.argv[1:])
-    #print(argv)
-    
     cmdarg = argv[0:1]
     if len(cmdarg) > 0:
         cmd = cmdarg[0]

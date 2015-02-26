@@ -27,7 +27,7 @@ from __future__ import print_function
 import sys
 
 name = 'viron'
-version = '0.4.8'
+version = '0.5.0'
 packages = []
 description = 'Put environment variables in text file templates.'
 keywords = 'python environment variable simple template text'
@@ -60,7 +60,7 @@ setup(
     
     url='http://github.com/fish2000/%s/' % name,
     download_url='http://github.com/fish2000/%s/zipball/master' % name,
-    install_requires=['argparse', 'argh'],
+    install_requires=['argparse', 'argh>=0.26.1'],
     
     package_dir={
         'viron': 'src/viron',
@@ -79,5 +79,6 @@ setup(
         'Operating System :: OS Independent',
         'Operating System :: POSIX',
         'Operating System :: Unix',
-        'Programming Language :: Python :: 2.7'],
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.3'],
 )

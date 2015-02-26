@@ -75,6 +75,8 @@ DATABASES = {
 if __name__ == "__main__":
     
     import tempfile
+    from os import sys, path
+    sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
     from viron import main as viron
     
     # passing text
@@ -82,20 +84,20 @@ if __name__ == "__main__":
     print("PASSING TEXT")
     print("=" * separators)
     
-    viron(['-t', yodogg])
+    viron(['-v', '-t', yodogg])
     
     print("-" * separators)
     print('')
     print('')
     
     # passing path to text in file
-    print("PASSING PATH TO TEXT")
+    tmp_name = "%s-PATH-TO-TEXT.txt" % tempfile.mktemp()
+    print("PASSING PATH TO TEXT: %s" % tmp_name)
     print("=" * separators)
     
-    tmp_name = "%s-PATH-TO-TEXT.txt" % tempfile.mktemp()
-    with open(tmp_name, "w+b") as tmp:
-        tmp.write(yodogg)
-    viron([tmp_name])
+    with open(tmp_name, "wb") as tmp_file:
+        tmp_file.write(yodogg)
+    viron(['-v', '-S', '0', tmp_name])
     
     print("-" * separators)
     print('')
@@ -106,7 +108,7 @@ if __name__ == "__main__":
     print("=" * separators)
     
     bad_tmp_name = "%s-BAD-PATH" % tempfile.mktemp()
-    viron([bad_tmp_name])
+    viron(['-v', bad_tmp_name])
     
     print("-" * separators)
     print('')
