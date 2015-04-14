@@ -44,13 +44,14 @@ def viron(swaptext, swapdic=os.environ, ignoreseq=tuple(),
     matcher = r'(?<!\\)\${1}([A-Z][A-Z0-9_]+)'
     bracedmatcher = r'(?<!\\)\${1}\{([A-Z][A-Z0-9_]+)\}'
     swapmapper = lambda en: en and (en, swapdic.get(en, "$%s" % en)) or ''
+    bracedswapmapper = lambda en: en and (en, swapdic.get(en, "${%s}" % en)) or ''
     swapfilter = lambda ex: ex and not (ex in ignoreseq)
     
     envs = dict(map(swapmapper,
         filter(swapfilter,
             re.compile(matcher).findall(swaptext))))
     envs.update(
-        dict(map(swapmapper,
+        dict(map(bracedswapmapper,
             filter(swapfilter,
                 re.compile(bracedmatcher).findall(swaptext)))))
     strays = set(envs.keys()).difference(swapdic.keys())
